@@ -61,7 +61,7 @@ model.add(Dense(512, activation="relu"))
 model.add(Dense(1, activation="sigmoid"))
 
 INIT_LR = 0.01
-EPOCHS = 30
+EPOCHS = 15
 
 print("training network")
 opt = SGD(lr=INIT_LR)
@@ -74,8 +74,10 @@ H = model.fit(x=trainX, y=trainY, validation_data=(testX, testY), epochs=EPOCHS,
 print("[INFO] evaluating network...")
 predictions = model.predict(x=testX, batch_size=32)
 
+print(predictions)
+
 print(classification_report(testY.argmax(axis=1),
-	predictions.argmax(axis=1), target_names=1))
+	predictions.argmax(axis=1), target_names=lb.classes_))
 
 N = np.arange(0, EPOCHS)
 plt.style.use("ggplot")
