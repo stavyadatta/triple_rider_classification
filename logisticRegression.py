@@ -58,7 +58,7 @@ testY = lb.transform(testY)
 model = Sequential()
 model.add(Dense(1024, input_shape=(3072,), activation="relu"))
 model.add(Dense(512, activation="relu"))
-model.add(Dense(len(lb.classes_), activation="softmax"))
+model.add(Dense(1, activation="sigmoid"))
 
 INIT_LR = 0.01
 EPOCHS = 30
@@ -66,7 +66,7 @@ EPOCHS = 30
 print("training network")
 opt = SGD(lr=INIT_LR)
 
-model.compile(loss="categorical_crossentropy", optimizer=opt,
+model.compile(loss="binary_crossentropy", optimizer=opt,
             metrics=["accuracy"])
 
 H = model.fit(x=trainX, y=trainY, validation_data=(testX, testY), epochs=EPOCHS, batch_size=15)
@@ -75,7 +75,7 @@ print("[INFO] evaluating network...")
 predictions = model.predict(x=testX, batch_size=32)
 
 print(classification_report(testY.argmax(axis=1),
-	predictions.argmax(axis=1), target_names=lb.classes_))
+	predictions.argmax(axis=1), target_names=1))
 
 N = np.arange(0, EPOCHS)
 plt.style.use("ggplot")
@@ -90,11 +90,7 @@ plt.ylabel("Loss/Accuracy")
 plt.legend()
 plt.savefig(args["plot"])
 
-print("[INFO] serializing network and label binarizer...")
-model.save(args["model"], save_format="h5")
-f = open(args["label_bin"], "wb")
-f.write(pickle.dumps(lb))
-f.close()
+
 
 
 
