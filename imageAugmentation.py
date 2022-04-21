@@ -10,15 +10,16 @@ import argparse
 ap = argparse.ArgumentParser()
 ap.add_argument("-d", "--dataset",
 	help="path to the input image", default="Dataset/triple_person")
-ap.add_argument("-o", "--output", required=True,
-	help="path to output directory to store augmentation examples", default="augData/")
-ap.add_argument("-t", "--total", type=int, default=1000,
+ap.add_argument("-o", "--output",
+	help="path to output directory to store augmentation examples", default="augData/triple_person")
+ap.add_argument("-t", "--total", type=int, default=10,
 	help="# of training samples to generate")
 args = vars(ap.parse_args())
 
 imagePaths = sorted(list(paths.list_images(args["dataset"])))
 
 aug = ImageDataGenerator(
+    featurewise_center=True,
 	width_shift_range=0.2,
 	height_shift_range=0.2,
 	shear_range=0.15,
