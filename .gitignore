@@ -2,3 +2,5 @@ Dataset
 output
 single_person
 augData
+__pycache__
+testSet

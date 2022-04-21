@@ -2,46 +2,44 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import load_img
 from imutils import paths
+import random
 import numpy as np
-import sys
-import argparse
 
-# construct the argument parser and parse the arguments
-ap = argparse.ArgumentParser()
-ap.add_argument("-d", "--dataset",
-	help="path to the input image", default="Dataset/triple_person")
-ap.add_argument("-o", "--output",
-	help="path to output directory to store augmentation examples", default="augData/triple_person")
-ap.add_argument("-t", "--total", type=int, default=10,
-	help="# of training samples to generate")
-args = vars(ap.parse_args())
+DATASET = "Dataset/single_person"
+OUTPUT_PATH = "testSet/single_person"
+AUG_PER_IMG = 1
 
-imagePaths = sorted(list(paths.list_images(args["dataset"])))
-
-aug = ImageDataGenerator(
-    featurewise_center=True,
-	width_shift_range=0.2,
-	height_shift_range=0.2,
-	shear_range=0.15,
-    horizontal_flip=True,
-	fill_mode="nearest")
-
-
-# looping over image directory for image 
-for imagePath in imagePaths:    
-    img = load_img(imagePath)
-    img = img_to_array(img)
-    image = np.expand_dims(img, axis = 0)
+# Generates Images from the dataset and can possibly augment random amount of images from set
+def GeneratorFunction(dataset_path, output_path, aug_per_img, random_num=None):
+    imagePaths = sorted(list(paths.list_images(dataset_path)))
     
-    total = 0
-    
-    print("[INFO] generating images...")
-    imageGen = aug.flow(image, batch_size=1, save_to_dir=args["output"],
-	save_prefix="image", save_format="jpg")
-    
-    for image in imageGen:
-        total += 1
-    
-        if total == args["total"]:
-            print("entering this")
-            break
+    if random_num:
+        imagePaths = random.choices(imagePaths, k=random_num)
+
+    aug = ImageDataGenerator(
+        featurewise_center=True,
+        width_shift_range=0.2,
+        height_shift_range=0.1,
+        shear_range=0.1,
+        horizontal_flip=True,
+        fill_mode="nearest")
+
+
+    # looping over image directory for image 
+    for imagePath in imagePaths:    
+        img = load_img(imagePath)
+        img = img_to_array(img)
+        image = np.expand_dims(img, axis = 0)
+        
+        total = 0
+        
+        print("[INFO] generating images...")
+        imageGen = aug.flow(image, batch_size=8, save_to_dir=output_path,
+        save_prefix="image", save_format="jpg")
+        
+        for image in imageGen:
+            total += 1
+        
+            if total == aug_per_img:
+                print("entering this")
+                break
